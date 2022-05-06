@@ -31,12 +31,13 @@ For future
 6. Change all Type floats to doubles. (DONE)
 7. fix the way spending is saved in to the "database".
 8. Thing of better way type than double ¥to save user input decimal values.
+9. [FEATURE]Kun maksaa laskun niin sovellus kertoo k‰ytt‰j‰lle budjetissa teoreettisesti varatun rahanm‰‰r‰n ja todellisuudessa maksetun osion erotuksen (esim: Budjetin s‰hkˆlasku 8.50e - tod.maksettu 8.00e = 0.50e buidjetti ylij‰‰m‰‰. 
 */
 
 // "DataBase"
 vector<double> billsVectorDouble; 
 vector<string> billsVectorString;
-vector<double> billsSpendVectorDouble(15);
+vector<double> billsSpendVectorDouble;
 
 vector<double> otherExpensesVectorDouble;
 vector<double> otherExpensesSpendVectorDouble(3);
@@ -50,6 +51,8 @@ double inputDouble;
 int    inputInt;
 double totalBudgetSum;
 double totalBills;
+double totalMonthsSpending = 0.00;
+int countIndex = 0;
 
 int    mainMenu();
 int    createBudget();
@@ -58,15 +61,17 @@ int    incomeInfo();
 int    backToMainMenu();
 int    devTerminal();
 int    addExpense();
-
+int	   reSizeBillsSpendVector();
+int    backToViewBudget();
+int    calcTotalMonthsSpending();
 
 int main()
 {
 	int fillVector();
 	{
-		otherExpensesVectorString.push_back("HOUSING: ");
-		otherExpensesVectorString.push_back("FOOD: ");
-		otherExpensesVectorString.push_back("TRANSPORT:");
+		otherExpensesVectorString.push_back("Housing");
+		otherExpensesVectorString.push_back("Food");
+		otherExpensesVectorString.push_back("Transport");
 	}
 
 	mainMenu();
@@ -88,35 +93,91 @@ int backToMainMenu()
 }
 int addExpense() 
 {
-	cout << "Did you pay A) a bill or B) something else" << endl;
+
+
+
+	cout << "Did you pay A) a bill or"<< endl << "B) Pay rent, buy food or pay for transportation? type the corresponding character." << endl;
 	cin >> inputChar;
 	cin.get();
-
 
 	if (inputChar == 'a' || inputChar == 'A')
 	{
 		for (int i = 0; i < billsVectorDouble.size(); i++)
 		{
 			cout << i << ". " << billsVectorString[i] << endl; // please delete this e it should not be there. (DONE)
-		} 
-
+		}
 
 		cout << "Type the number of the bill you paid: ";
 		cin >> inputInt;
-
+		cin.get();
 		cout << "How much you paid for " << billsVectorString[inputInt] << "?: ";
-		cin >> inputDouble; // (BUG) program crashes here probably because you are trying to insert a value to an non existant vector index. 
+		cin >> inputDouble; // (BUG) program crashes here probably because you are trying to insert a value to an non existant vector index. (FIXED)
+		cin.get();
 		billsSpendVectorDouble.insert(billsSpendVectorDouble.begin() + inputInt, inputDouble);
-		cout << billsVectorString[inputInt] << ": " << billsSpendVectorDouble[inputInt] << "e saved." << endl; 
-			 
+		cout << billsVectorString[inputInt] << ": " << billsSpendVectorDouble[inputInt] << "e saved." << endl;
+	}
 
-		int backToMainMenu();
+	else if (inputChar == 'b' || inputChar == 'B')
+	{
+		cout << "Type the number that corresponds rent, food or transportation";
+		cin >> inputInt;
+		cin.get();
+		cout << "how much you paid for " << otherExpensesVectorString[inputInt] << "?: ";
+		cin >> inputDouble;
+		cin.get();
+		otherExpensesSpendVectorDouble.insert(otherExpensesSpendVectorDouble.begin() + inputInt, inputDouble);
+		cout << otherExpensesVectorString[inputInt] << ": " << otherExpensesSpendVectorDouble[inputInt] << "e saved" << endl;
+	}
+
+	cout << "If you want to add another expense press A. if you want to go back to viewing your budget press q: ";
+	cin >> inputChar;
+	cin.get();
+	if (inputChar == 'a' || inputChar == 'A')
+	{
+		addExpense();
+	}
+
+	
+		backToViewBudget();
+	
+	return 0;
+}
+int backToViewBudget()
+{
+
+	char inputChar;
+	cout << "Go back to view budget by pressing A: ";
+	cin >> inputChar;
+	cin.get();
+	if (inputChar == 'a')
+	{
+		viewBudget();
 	}
 
 
 	return 0;
 }
+int reSizeBillsSpendVector()
+{
+	size_t vectorSize = billsVectorDouble.size();
+		
+		billsSpendVectorDouble.resize(vectorSize, 0.00); // int ei conversoidu size_t error.
+		return 0;
+}
+int calcTotalMonthsSpending()
+{
+	for (int i = 0; i < billsSpendVectorDouble.size(); i++)
+	{
+		totalMonthsSpending += billsSpendVectorDouble[i];
+	}
 
+
+	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++)
+	{
+		totalMonthsSpending += otherExpensesSpendVectorDouble[i];
+	}
+	return 0;
+}
 //Different menus and actions in those menus
 
 int mainMenu()
@@ -214,7 +275,7 @@ int createBudget()
 		cout << endl;
 		billsVectorDouble.push_back(inputDouble);
 
-		cout << billsVectorString[count] <<" "<< billsVectorDouble[count] << " e" << " saved " << endl;
+		cout << billsVectorString[count] <<" "<< billsVectorDouble[count] << "e " << "saved. " << endl;
 		cout << "Press A to add another bill And Q to quit adding bills and press enter: ";
 		cin >> inputChar;
 		cin.get();
@@ -240,10 +301,11 @@ int createBudget()
 	cout << "-------------------" << endl << endl;
 	cout << "BILLS" << endl;
 
-
+	
 	for (int i = 0; i < billsVectorDouble.size(); i++) 	
 	{
-		cout << i << ". " << billsVectorString[i] << ": " << billsVectorDouble[i] << "e " << endl;
+		countIndex++;
+		cout << countIndex << ". " << billsVectorString[i] << ": " << billsVectorDouble[i] << "e " << endl;
 	}
 	
 
@@ -254,15 +316,16 @@ int createBudget()
 
 
 	cout << "-------------" << endl;
-	cout << "Total bills: " << totalBills << endl;
+	cout << "Total bills: " << totalBills << "e " << endl;
 	cout << endl;
 
 
 	for (int i = 0; i < otherExpensesVectorDouble.size(); i++)
 	{
-		cout << i << ". " << otherExpensesVectorString[i] << otherExpensesVectorDouble[i] << "e " << endl;
+		countIndex++;
+		cout << countIndex << ". " << otherExpensesVectorString[i] << otherExpensesVectorDouble[i] << "e " << endl;
 	}
-
+	countIndex = 0;
 
 	for (int i = 0; i < billsVectorDouble.size(); i++)
 	{
@@ -286,29 +349,51 @@ int createBudget()
 } //here user creates a budget and here the vectors get values inserted.
 int viewBudget()
 {
-	
+	calcTotalMonthsSpending();
+	if (billsSpendVectorDouble.size() == 1)
+	{
+		int reSizeBillsSpendVector();
+	}
+
 	cout << "B) VIEW BUDGET/ SPENDING." << endl;
 	cout << "-------------------------" << endl<< endl;
 	cout << "Here you can view your budget," << endl << "keep book of your spending," << endl << "and view how much money you have left to spend for this month." << endl << endl;
 	cout << "Your monthly budget" << endl;
 	cout << "-------------------" << endl;
 	cout << endl;
-	
 	for (int i = 0; i < billsVectorDouble.size(); i++)
 	{
-		cout << i << ". " << billsVectorString[i] << ": " << billsVectorDouble[i] << "e " << endl;
-	} //end of for loop
-
+		countIndex++;
+		cout << countIndex << ". " << billsVectorString[i] << ": " << billsVectorDouble[i] << "e " << endl;
+	} 
 	for (int i = 0; i < otherExpensesVectorDouble.size(); i++)
 	{
-		cout << i << ". " << otherExpensesVectorString[i] << ": " << otherExpensesVectorDouble[i] << "e " << endl;
-	} 
-	// These loops print the budget
-
+		countIndex++;
+		cout << countIndex << ". " << otherExpensesVectorString[i] << ": " << otherExpensesVectorDouble[i] << "e " << endl;
+	}
+	countIndex = 0;
 	cout << "---------------" << endl;
-	cout << "Mothly budget: " << totalBudgetSum << "e " << endl;
+	cout << "Monthly budget: " << totalBudgetSum << "e " << endl;
 	cout << endl;
 
+	// THIS GOES TO SWITCH TABLES CASE 'b'! START
+	cout << "Your spending this month" << endl;
+	cout << "------------------------" << endl;
+	cout << endl;
+	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user.
+	{
+		countIndex++;
+		cout << countIndex << ". " << billsVectorString[i] << ": " << billsSpendVectorDouble[i] << "e " << endl;
+	}
+	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++)
+	{
+		countIndex++;
+		cout << countIndex << ". " << otherExpensesVectorString[i] << ": " << otherExpensesSpendVectorDouble[i] << "e " << endl;
+	}
+	cout << "--------------" << endl;
+	cout << "You have spend:" << totalMonthsSpending << "e this month." << endl; 
+	cout << endl;
+	// THIS GOES TO SWITCH TABLES CASE 'b'! END
 	cout << "A) Add an expense" << endl;
 	cout << "B) view expenses and how much of budget is left." << endl;
 	cin >> inputChar;
