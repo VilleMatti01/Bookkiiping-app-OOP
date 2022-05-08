@@ -20,7 +20,7 @@ Change log
 11. Started making addExpense() and got it half done.
 12. created devTerminal() where you can try functions and features.
 13. Made billsSpendVectorDouble and otherExpensesSpendVectorDouble.
-
+14. Made billsSpendVectorDouble Save information and print it in viewBudget!!!! and created a bug where otherExpensesSpendVectorDouble wont print again[Expression: Vector Subscript out of range]
 For future
 ----------
 1. Make stringOtherExpensesVector work and save "housing", "food", "transport" there. (DONE)
@@ -29,15 +29,15 @@ For future
 4. Create addExpense() and viewExpense().
 5. Make the expenses minus from totalSum so it can display it.
 6. Change all Type floats to doubles. (DONE)
-7. fix the way spending is saved in to the "database".
-8. Thing of better way type than double ¥to save user input decimal values.
-9. [FEATURE]Kun maksaa laskun niin sovellus kertoo k‰ytt‰j‰lle budjetissa teoreettisesti varatun rahanm‰‰r‰n ja todellisuudessa maksetun osion erotuksen (esim: Budjetin s‰hkˆlasku 8.50e - tod.maksettu 8.00e = 0.50e buidjetti ylij‰‰m‰‰. 
+7. fix the way spending is saved in to the "database". (DONE)
+8. [FEATURE]Kun maksaa laskun niin sovellus kertoo k‰ytt‰j‰lle budjetissa teoreettisesti varatun rahanm‰‰r‰n ja todellisuudessa maksetun osion erotuksen (esim: Budjetin s‰hkˆlasku 8.50e - tod.maksettu 8.00e = 0.50e buidjetti ylij‰‰m‰‰. 
+9. Fix when in viewBudget() printing spend second time the otherExpensesSpendVectorDouble wont print.
 */
 
 // "DataBase"
 vector<double> billsVectorDouble; 
 vector<string> billsVectorString;
-vector<double> billsSpendVectorDouble;
+vector<double> billsSpendVectorDouble(1);
 
 vector<double> otherExpensesVectorDouble;
 vector<double> otherExpensesSpendVectorDouble(3);
@@ -53,6 +53,7 @@ double totalBudgetSum;
 double totalBills;
 double totalMonthsSpending = 0.00;
 int countIndex = 0;
+int countBills = 0;
 
 int    mainMenu();
 int    createBudget();
@@ -61,7 +62,7 @@ int    incomeInfo();
 int    backToMainMenu();
 int    devTerminal();
 int    addExpense();
-int	   reSizeBillsSpendVector();
+void	   reSizeBillsSpendVector();
 int    backToViewBudget();
 int    calcTotalMonthsSpending();
 
@@ -157,12 +158,13 @@ int backToViewBudget()
 
 	return 0;
 }
-int reSizeBillsSpendVector()
+void reSizeBillsSpendVector()
 {
-	size_t vectorSize = billsVectorDouble.size();
+	for (int i = 0; i < countBills; i++)
+	{
+		billsSpendVectorDouble.push_back(0.0);
+	}
 		
-		billsSpendVectorDouble.resize(vectorSize, 0.00); // int ei conversoidu size_t error.
-		return 0;
 }
 int calcTotalMonthsSpending()
 {
@@ -274,7 +276,7 @@ int createBudget()
 		cin.get();
 		cout << endl;
 		billsVectorDouble.push_back(inputDouble);
-
+		countBills++;
 		cout << billsVectorString[count] <<" "<< billsVectorDouble[count] << "e " << "saved. " << endl;
 		cout << "Press A to add another bill And Q to quit adding bills and press enter: ";
 		cin >> inputChar;
@@ -349,11 +351,13 @@ int createBudget()
 } //here user creates a budget and here the vectors get values inserted.
 int viewBudget()
 {
-	calcTotalMonthsSpending();
-	if (billsSpendVectorDouble.size() == 1)
+
+	if (countBills > 1)
 	{
-		int reSizeBillsSpendVector();
+		reSizeBillsSpendVector();
 	}
+
+	calcTotalMonthsSpending();
 
 	cout << "B) VIEW BUDGET/ SPENDING." << endl;
 	cout << "-------------------------" << endl<< endl;
@@ -380,16 +384,19 @@ int viewBudget()
 	cout << "Your spending this month" << endl;
 	cout << "------------------------" << endl;
 	cout << endl;
-	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user.
+
+	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user(SOLVED!).
 	{
 		countIndex++;
 		cout << countIndex << ". " << billsVectorString[i] << ": " << billsSpendVectorDouble[i] << "e " << endl;
 	}
+
 	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++)
 	{
 		countIndex++;
-		cout << countIndex << ". " << otherExpensesVectorString[i] << ": " << otherExpensesSpendVectorDouble[i] << "e " << endl;
+		cout << countIndex << ". " << otherExpensesVectorString[i] << ": " << otherExpensesSpendVectorDouble[i] << "e " << endl; //BUG REPORT! This throws expection when seconds time loading after adding a bill.
 	}
+	countIndex = 0;
 	cout << "--------------" << endl;
 	cout << "You have spend:" << totalMonthsSpending << "e this month." << endl; 
 	cout << endl;
@@ -436,12 +443,13 @@ int incomeInfo()
 int devTerminal()
 {
 
-
+	cout << "Size of billsSpend Vector is: " << billsSpendVectorDouble.size() << endl;
+	cout << "Size of OtherExpensesSpend vector is: " << otherExpensesSpendVectorDouble.size() << endl;
 	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++) 
 	{
 		cout << i << otherExpensesSpendVectorDouble[i] << endl;
 	}
-
+	backToMainMenu();
 
 	return 0;
 } //This is not for users only devs.
