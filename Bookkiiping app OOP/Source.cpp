@@ -21,6 +21,8 @@ Change log
 12. created devTerminal() where you can try functions and features.
 13. Made billsSpendVectorDouble and otherExpensesSpendVectorDouble.
 14. Made billsSpendVectorDouble Save information and print it in viewBudget!!!! and created a bug where otherExpensesSpendVectorDouble wont print again[Expression: Vector Subscript out of range]
+15. Vector Subscript error still occures in the viewBudget()
+16. The problem is that insert is adding a new ELEMENT in to the array and not adding data to an existing element.
 For future
 ----------
 1. Make stringOtherExpensesVector work and save "housing", "food", "transport" there. (DONE)
@@ -37,10 +39,10 @@ For future
 // "DataBase"
 vector<double> billsVectorDouble; 
 vector<string> billsVectorString;
-vector<double> billsSpendVectorDouble(1);
+vector<double> billsSpendVectorDouble;
 
 vector<double> otherExpensesVectorDouble;
-vector<double> otherExpensesSpendVectorDouble(3);
+vector<double> otherExpensesSpendVectorDouble;
 vector<string> otherExpensesVectorString;
 
 
@@ -54,7 +56,7 @@ double totalBills;
 double totalMonthsSpending = 0.00;
 int countIndex = 0;
 int countBills = 0;
-
+int countOtherExpenses = 3;
 int    mainMenu();
 int    createBudget();
 int    viewBudget();
@@ -62,8 +64,6 @@ int    incomeInfo();
 int    backToMainMenu();
 int    devTerminal();
 int    addExpense();
-void	   reSizeBillsSpendVector();
-int    backToViewBudget();
 int    calcTotalMonthsSpending();
 
 int main()
@@ -96,14 +96,15 @@ int addExpense()
 {
 
 
-
-	cout << "Did you pay A) a bill or"<< endl << "B) Pay rent, buy food or pay for transportation? type the corresponding character." << endl;
+	cout << endl;
+	cout << "Did you pay" << endl;
+	cout << "A) a bill"<< endl << "B) Or something else?" << endl;
 	cin >> inputChar;
 	cin.get();
 
 	if (inputChar == 'a' || inputChar == 'A')
 	{
-		for (int i = 0; i < billsVectorDouble.size(); i++)
+		for (int i = 0; i < billsVectorString.size(); i++)
 		{
 			cout << i << ". " << billsVectorString[i] << endl; // please delete this e it should not be there. (DONE)
 		}
@@ -120,7 +121,11 @@ int addExpense()
 
 	else if (inputChar == 'b' || inputChar == 'B')
 	{
-		cout << "Type the number that corresponds rent, food or transportation";
+		for (int i = 0; i < otherExpensesVectorString.size(); i++)
+		{
+			cout << i << ". " << otherExpensesVectorString[i] << endl; // please delete this e it should not be there. (DONE)
+		}
+		cout << "Type the number that corresponds rent, food or transportation: ";
 		cin >> inputInt;
 		cin.get();
 		cout << "how much you paid for " << otherExpensesVectorString[inputInt] << "?: ";
@@ -130,41 +135,19 @@ int addExpense()
 		cout << otherExpensesVectorString[inputInt] << ": " << otherExpensesSpendVectorDouble[inputInt] << "e saved" << endl;
 	}
 
-	cout << "If you want to add another expense press A. if you want to go back to viewing your budget press q: ";
+	cout << "If you want to add another expense press A. To stop adding expenses press anything: ";
 	cin >> inputChar;
 	cin.get();
 	if (inputChar == 'a' || inputChar == 'A')
 	{
 		addExpense();
 	}
-
-	
-		backToViewBudget();
-	
-	return 0;
-}
-int backToViewBudget()
-{
-
-	char inputChar;
-	cout << "Go back to view budget by pressing A: ";
-	cin >> inputChar;
-	cin.get();
-	if (inputChar == 'a')
+	else
 	{
 		viewBudget();
 	}
-
-
+	
 	return 0;
-}
-void reSizeBillsSpendVector()
-{
-	for (int i = 0; i < countBills; i++)
-	{
-		billsSpendVectorDouble.push_back(0.0);
-	}
-		
 }
 int calcTotalMonthsSpending()
 {
@@ -256,7 +239,7 @@ int createBudget()
 	cin.get();
 	cout << endl;
 	billsVectorDouble.push_back(inputDouble);
-
+	billsSpendVectorDouble.push_back(0.0);
 	cout << billsVectorString[count]<< " " << billsVectorDouble[count] << "e saved " << endl;
 	cout << "Type a to add another bill: ";
 	cin >> inputChar;
@@ -276,6 +259,7 @@ int createBudget()
 		cin.get();
 		cout << endl;
 		billsVectorDouble.push_back(inputDouble);
+		billsSpendVectorDouble.push_back(0.0);
 		countBills++;
 		cout << billsVectorString[count] <<" "<< billsVectorDouble[count] << "e " << "saved. " << endl;
 		cout << "Press A to add another bill And Q to quit adding bills and press enter: ";
@@ -289,15 +273,18 @@ int createBudget()
 	cout << "next, how much is the sum of all your housing costs (water/rent/car parking/home loan payment) payment every month: ";
 	cin >> inputDouble;
 	otherExpensesVectorDouble.push_back(inputDouble);
+	otherExpensesSpendVectorDouble.push_back(0.0);
 	cout << endl;
 	cout << "how much you need money for food everyweek?: ";
 	cin >> inputDouble;
 	inputDouble *= 4;
 	otherExpensesVectorDouble.push_back(inputDouble);
+	otherExpensesSpendVectorDouble.push_back(0.0);
 	cout << "How much money do you need for transport(Bus Tickets, Petrol etc) every week?: ";
 	cin >> inputDouble;
 	inputDouble *= 4;
 	otherExpensesVectorDouble.push_back(inputDouble);
+	otherExpensesSpendVectorDouble.push_back(0.0);
 	cout << endl;
 	cout << "YOUR MONTHLY BUDGET" << endl;
 	cout << "-------------------" << endl << endl;
@@ -352,10 +339,6 @@ int createBudget()
 int viewBudget()
 {
 
-	if (countBills > 1)
-	{
-		reSizeBillsSpendVector();
-	}
 
 	calcTotalMonthsSpending();
 
@@ -391,10 +374,10 @@ int viewBudget()
 		cout << countIndex << ". " << billsVectorString[i] << ": " << billsSpendVectorDouble[i] << "e " << endl;
 	}
 
-	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++)
+	for (int k = 0; k < otherExpensesSpendVectorDouble.size(); k++)
 	{
 		countIndex++;
-		cout << countIndex << ". " << otherExpensesVectorString[i] << ": " << otherExpensesSpendVectorDouble[i] << "e " << endl; //BUG REPORT! This throws expection when seconds time loading after adding a bill.
+		cout << countIndex << ". " << otherExpensesVectorString[k] << ": " << otherExpensesSpendVectorDouble[k] << "e " << endl; //BUG REPORT! This throws expection when seconds time loading after adding a bill.
 	}
 	countIndex = 0;
 	cout << "--------------" << endl;
@@ -442,15 +425,26 @@ int incomeInfo()
 } //here user can edit income info
 int devTerminal()
 {
-
-	cout << "Size of billsSpend Vector is: " << billsSpendVectorDouble.size() << endl;
-	cout << "Size of OtherExpensesSpend vector is: " << otherExpensesSpendVectorDouble.size() << endl;
-	for (int i = 0; i < otherExpensesSpendVectorDouble.size(); i++) 
+	
+	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user(SOLVED!).
 	{
-		cout << i << otherExpensesSpendVectorDouble[i] << endl;
+		countIndex++;
+		cout << countIndex << ". " << billsVectorString[i] << ": " << billsSpendVectorDouble[i] << "e " << endl;
 	}
-	backToMainMenu();
+	cout << "Size of bills spend vector is: " << billsSpendVectorDouble.size() << endl;
 
+	countIndex = 0;
+	cin >> inputInt;
+	cin.get();
+	cin >> inputDouble;
+	cin.get();
+	billsSpendVectorDouble.insert(billsSpendVectorDouble.begin() + inputInt, inputDouble);
+	cout << "Size of bills spend vector is: " << billsSpendVectorDouble.size() << endl;
+
+
+
+
+	backToMainMenu();
 	return 0;
 } //This is not for users only devs.
 
