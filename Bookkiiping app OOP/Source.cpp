@@ -104,6 +104,7 @@ int	calcCarFuelCost()
 
 	fuelTotal = ((fuelKilometers / 100) * fuelUsage * fuelCost) * 4;
 	otherExpensesVectorDouble.push_back(fuelTotal);
+	otherExpensesSpendVectorDouble.push_back(0.0);
 
 	cout << otherExpensesVectorDouble[2] << "e saved for fuel in monthly budget." << endl;
 	return 0;
@@ -123,6 +124,7 @@ int calcOtherTransportCost()
 
 	inputDouble *= 4;
 	otherExpensesVectorDouble.push_back(inputDouble);
+	otherExpensesSpendVectorDouble.push_back(0.0);
 
 	cout << otherExpensesVectorDouble[2] << "e saved for " << otherExpensesVectorString[2] << "trips in monthly budget" << endl;
 	return 0;
@@ -147,8 +149,10 @@ int addExpense()
 	cout << endl;
 	cout << "Did you pay" << endl;
 	cout << "A) a bill"<< endl << "B) Or something else?" << endl;
+	cout << "input: ";
 	cin >> inputChar;
 	cin.get();
+	cout << endl;
 
 	if (inputChar == 'a' || inputChar == 'A')
 	{
@@ -158,7 +162,8 @@ int addExpense()
 			cout << countIndex << ". " << billsVectorString[i] << endl; // please delete this e it should not be there. (DONE)
 		}
 		countIndex = 0;
-		cout << "Type the number of the bill you paid: ";
+		cout << "Type the number of the bill you paid." << endl;
+		cout << "Input: ";
 		cin >> inputInt;
 		inputInt -= 1;
 		cin.get();
@@ -173,13 +178,16 @@ int addExpense()
 
 	else if (inputChar == 'b' || inputChar == 'B')
 	{
+		
 		for (int i = 0; i < otherExpensesVectorString.size(); i++)
 		{
 			countIndex++;
 			cout << countIndex << ". " << otherExpensesVectorString[i] << endl; // please delete this e it should not be there. (DONE)
 		}
 		countIndex = 0;
-		cout << "Type the number that corresponds rent, food or transportation: ";
+
+		cout << "Enter the number of the expense that you paid." << endl;
+		cout << "input: ";
 		cin >> inputInt;
 		inputInt -= 1;
 		cin.get();
@@ -191,7 +199,9 @@ int addExpense()
 		cout << otherExpensesVectorString[inputInt] << ": " << otherExpensesSpendVectorDouble[inputInt] << "e saved" << endl;
 	}
 
-	cout << "If you want to add another expense press A. To stop adding expenses press anything: ";
+	cout << "Do you want to?" << endl;
+	cout << "A) Add another expense." << endl;
+	cout << "B) Go back to view budget." << endl;
 	cin >> inputChar;
 	cin.get();
 	if (inputChar == 'a' || inputChar == 'A')
@@ -207,6 +217,7 @@ int addExpense()
 }
 int addExtraExpense()
 {
+	cout << endl;
 	cout << "EXTRA EXPENSES" << endl;
 
 	while (inputChar != 'q')
@@ -216,17 +227,18 @@ int addExtraExpense()
 
 		otherExpensesVectorString.push_back(inputString);
 
-		cout << "how much does " << otherExpensesVectorString.back() << " cost you per month?" << endl;
+		cout << "how much " << otherExpensesVectorString.back() << " costs you on monthly basis?" << endl;
 		cout << "Monthly cost: ";
 		cin >> inputDouble;
 		cin.get();
 
 		otherExpensesVectorDouble.push_back(inputDouble);
+		otherExpensesSpendVectorDouble.push_back(0.0);
 		
 		cout << otherExpensesVectorString.back() << ": " << otherExpensesVectorDouble.back() << "e/month saved." << endl;
 		cout << endl;
 
-		cout << "Do you want to" << endl;
+		cout << "Do you want to?" << endl;
 		cout << "A) Add another expense." << endl;
 		cout << "Q) stop adding expenses. " << endl;
 		cout << "input: ";
@@ -243,7 +255,6 @@ int mainMenu()
 	
 	cout << "PERSONAL FINANCE BOOKKEEPING." << endl;
 	cout << "-----------------------------" << endl;
-	cout << endl;
 	cout << "Hello user, welcome to personal finance bookkeeping!" << endl;
 	cout << "Do you want to?" << endl;
 	cout << "A) create personal monthly budget?" << endl;
@@ -330,13 +341,16 @@ int createBudget()
 	cout <<countIndex<<". " << billsVectorString[count] << " " << billsVectorDouble[count] << "e saved " << endl;
 	cout << endl;
 
-	cout << "Press A to add another bill,Press Q to quit adding bills: ";
+	cout << "Do you want to?" << endl;
+	cout << "A) add another bill." << endl;
+	cout << "B)Stop adding bills." << endl;
+	cout << "input: ";
 	cin >> inputChar;
 	cin.get();
 	cout << endl;
 
 
-	while (inputChar != 'q') //  BUG REPORT: while user is typing bill name and if user types it like this -> "car insurance" and not like this "carInsurance" it will cause infinite loop. (FIXED!)
+	while (inputChar != 'b') //  BUG REPORT: while user is typing bill name and if user types it like this -> "car insurance" and not like this "carInsurance" it will cause infinite loop. (FIXED!)
 	{
 		count++;
 		cout << "Name of the bill: ";
@@ -354,7 +368,10 @@ int createBudget()
 		cout << countIndex <<". " << billsVectorString[count] << " " << billsVectorDouble[count] << "e " << "saved. " << endl;
 		cout << endl;
 
-		cout << "Press A to add another bill,Press Q to quit adding bills: ";
+		cout << "Do you want to?" << endl;
+		cout << "A) Add another bill." << endl;
+		cout << "B) Stop adding bills." << endl;
+		cout << "input: ";
 		cin >> inputChar;
 		cin.get();
 		cout << endl;
@@ -452,7 +469,8 @@ int createBudget()
 	cout << "----------------------" << endl;
 	cout << "Your monthly net-income is: " << netIncome << "e." << endl;
 	cout << "Total monthly bugdet: " << totalBudgetSum << "e." << endl;
-	cout << "You can save " << netIncome - totalBudgetSum << "e." << endl;
+	cout << "You can save: " << netIncome - totalBudgetSum << "e." << endl;
+	cout << endl;
 
 	backToMainMenu();
 
@@ -468,7 +486,6 @@ int viewBudget()
 	cout << "Here you can view your budget," << endl << "keep book of your spending," << endl << "and view how much money you have left to spend for this month." << endl << endl;
 	cout << "Your monthly budget" << endl;
 	cout << "-------------------" << endl;
-	cout << endl;
 	for (int i = 0; i < billsVectorDouble.size(); i++)
 	{
 		countIndex++;
@@ -486,7 +503,6 @@ int viewBudget()
 
 	cout << "Your spending this month" << endl;
 	cout << "------------------------" << endl;
-	cout << endl;
 
 	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user(SOLVED!).
 	{
@@ -544,25 +560,22 @@ int incomeInfo()
 int devTerminal()
 {
 	
-	for (int i = 0; i < billsSpendVectorDouble.size(); i++) //BUG REPORT! This doesnt print to user(SOLVED!).
+	cout << "Nothing here atm" << endl;
+
+	cout << "A)back to main menu." << endl;
+	cout << "input: ";
+	cin >> inputChar;
+	cin.get();
+
+	if (inputChar == 'a' || inputChar == 'A')
 	{
-		countIndex++;
-		cout << countIndex << ". " << billsVectorString[i] << ": " << billsSpendVectorDouble[i] << "e " << endl;
+		backToMainMenu();
 	}
-	cout << "Size of bills spend vector is: " << billsSpendVectorDouble.size() << endl;
-
-	countIndex = 0;
-	cin >> inputInt;
-	cin.get();
-	cin >> inputDouble;
-	cin.get();
-	billsSpendVectorDouble.insert(billsSpendVectorDouble.begin() + inputInt, inputDouble);
-	cout << "Size of bills spend vector is: " << billsSpendVectorDouble.size() << endl;
-
-
-
-
-	backToMainMenu();
+	else
+	{
+		cout << "ERROR 1005. Invalid character. Try again!" << endl;
+		devTerminal();
+	}
 	return 0;
 } //This is not for users only devs.
 
